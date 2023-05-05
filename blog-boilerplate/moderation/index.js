@@ -5,6 +5,7 @@ const axios = require('axios');
 const app = express();
 app.use(bodyParser.json());
 
+// Recieves events from the event bus
 app.post('/events', async (req, res) => {
   const { type, data } = req.body;
 
@@ -15,6 +16,7 @@ app.post('/events', async (req, res) => {
       data.content = 'This comment has been rejected'
     }
 
+    // Trggererd Moderated Comment event
     await axios.post('http://localhost:4005/events', {
       type: 'CommentModerated',
       data: {
