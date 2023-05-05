@@ -7,6 +7,10 @@ app.use(bodyParser.json());
 
 const events = [];
 
+/*
+  Event Bus handles events or we can say recieves events from the any 
+  of the service and publish to the all the available services
+*/
 app.post("/events", (req, res) => {
   const event = req.body;
 
@@ -27,6 +31,7 @@ app.post("/events", (req, res) => {
   res.send({ status: "OK" });
 });
 
+// This rest returns the events from the events array
 app.get('/events', (req, res) => {
   res.send(events);
 })

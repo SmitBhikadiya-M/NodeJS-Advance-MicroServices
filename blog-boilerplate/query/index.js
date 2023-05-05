@@ -9,6 +9,8 @@ app.use(cors());
 
 const posts = {};
 
+
+// Update Query Data based on the different emitted events
 const handleEvents = (type, data) => {
   if (type === 'PostCreated') {
     const { id, title } = data;
@@ -49,6 +51,7 @@ app.post('/events', (req, res) => {
 app.listen(4002, async () => {
   console.log('Listening on 4002');
 
+  // Get The Event from the queue and update posts based on the event type
   const res = await axios.get('http://localhost:4005/events');
   for(let event of res.data ?? []){
     console.log("Processing Event: " + event.type);
