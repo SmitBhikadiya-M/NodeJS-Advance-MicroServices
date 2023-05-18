@@ -10,12 +10,10 @@ app.use(cors());
 
 const commentsByPostId = {};
 
-// To get all the comments for a specific post from the commentsByPostId
 app.get("/posts/:id/comments", (req, res) => {
   res.send(commentsByPostId[req.params.id] || []);
 });
 
-// To comment on a specific post 
 app.post("/posts/:id/comments", async (req, res) => {
   const commentId = randomBytes(4).toString("hex");
   const { content } = req.body;
@@ -26,8 +24,7 @@ app.post("/posts/:id/comments", async (req, res) => {
 
   commentsByPostId[req.params.id] = comments;
 
-  // Trgger Event 'CommentCreated' to Event Bus
-  await axios.post("http://localhost:4005/events", {
+  await axios.post("http://event-bus-srv:4005/events", {
     type: "CommentCreated",
     data: {
       id: commentId,
@@ -40,20 +37,21 @@ app.post("/posts/:id/comments", async (req, res) => {
   res.status(201).send(comments);
 });
 
-// Recieved Event From the Event Bus
 app.post("/events", async (req, res) => {
+  console.log("Event Received:", req.body.type);
+
   const { type, data } = req.body;
 
   if (type === "CommentModerated") {
     const { postId, id, status, content } = data;
     const comments = commentsByPostId[postId];
+
     const comment = comments.find((comment) => {
       return comment.id === id;
     });
     comment.status = status;
 
-    // Trigger Event while getting event CommentModerated to update the status of the comment
-    await axios.post("http://localhost:4005/events", {
+    await axios.post("http://event-bus-srv:4005/events", {
       type: "CommentUpdated",
       data: {
         id,
