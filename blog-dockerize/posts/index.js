@@ -10,12 +10,10 @@ app.use(cors());
 
 const posts = {};
 
-// To get all the posts without assoiceted comments
 app.get("/posts", (req, res) => {
   res.send(posts);
 });
 
-// To create a new post
 app.post("/posts", async (req, res) => {
   const id = randomBytes(4).toString("hex");
   const { title } = req.body;
@@ -25,8 +23,7 @@ app.post("/posts", async (req, res) => {
     title,
   };
 
-  // Emit Post Created Event
-  await axios.post("http://localhost:4005/events", {
+  await axios.post("http://event-bus-srv:4005/events", {
     type: "PostCreated",
     data: {
       id,
@@ -37,8 +34,6 @@ app.post("/posts", async (req, res) => {
   res.status(201).send(posts[id]);
 });
 
-
-// Listening triggered event
 app.post("/events", (req, res) => {
   console.log("Received Event", req.body.type);
 
